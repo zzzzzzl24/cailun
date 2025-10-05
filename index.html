@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>蔡侯纸博物馆</title>
+  <style>
+    body {
+      margin:0;
+      font-family:'Microsoft YaHei', sans-serif;
+      background:#f8f5f0;
+      color:#333;
+    }
+    header {
+      background:#7c0a02;
+      color:#fff;
+    }
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1400px;
+      margin:auto;
+      padding:10px 20px;
+    }
+    .logo-title {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo-title img { height:50px; }
+    nav ul {
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      gap:30px;
+    }
+    nav ul li { min-width:100px; text-align:center; }
+    nav ul li a {
+      color:#fff; text-decoration:none; font-size:16px; padding:8px;
+      transition: all 0.3s;
+    }
+    nav ul li a:hover { border-bottom:2px solid #fff; }
+    .rightbar { display:flex; align-items:center; gap:15px; }
+    .search-box input { padding:5px; border-radius:4px; border:none; }
+
+    /* 轮播图样式 */
+    .slideshow-container { position:relative; max-width:100%; margin:auto; overflow:hidden; }
+    .slides { display:none; }
+    .slides img, .slides video { width:100%; height:500px; object-fit:cover; }
+    .prev, .next {
+      cursor:pointer; position:absolute; top:50%; width:auto; padding:16px;
+      color:white; font-weight:bold; font-size:18px; transition:0.6s ease;
+      border-radius:0 3px 3px 0; user-select:none;
+    }
+    .next { right:0; border-radius:3px 0 0 3px; }
+    .prev:hover, .next:hover { background-color:rgba(0,0,0,0.8); }
+    .dot-container { text-align:center; padding:10px; background:#f1f1f1; }
+    .dot {
+      cursor:pointer; height:12px; width:12px; margin:0 3px;
+      background-color:#bbb; border-radius:50%; display:inline-block;
+      transition:background-color 0.6s ease;
+    }
+    .active, .dot:hover { background-color:#717171; }
+
+    /* 信息板块通用样式 */
+    .info-section { display:flex; justify-content:center; padding:30px 10px; background:#f8f5f0; }
+    .info-container {
+      display:flex; flex-direction:column; max-width:1400px; width:95%; gap:20px;
+      background:#fff; border-radius:12px; padding:30px 40px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      align-items:flex-start; justify-content:flex-start;
+    }
+    .info-left, .info-right { width:100%; }
+    .info-left h2, .info-right h2 {
+      font-size:26px; font-weight:600; color:#7c0a02;
+      margin:0; padding-left:12px; border-left:5px solid #c59d5f; margin-bottom:10px;
+    }
+    .info-left p { line-height:1.8; font-size:16px; }
+    .btn-more { display:inline-block; margin-top:15px; color:#c59d5f; text-decoration:none; font-weight:500; transition: all 0.3s; }
+    .btn-more:hover { text-decoration:underline; }
+    .visit-list { list-style:none; padding:0; margin:0; }
+    .visit-list li { display:flex; align-items:flex-start; margin-bottom:15px; font-size:16px; }
+    .visit-list li i {
+      font-style:normal; display:inline-block; width:28px; height:28px;
+      background-color:#c59d5f; color:#fff; text-align:center; line-height:28px;
+      border-radius:50%; margin-right:12px; font-weight:bold;
+    }
+    .btn-ticket { display:inline-block; margin-left:10px; color:#c59d5f; text-decoration:underline; transition: all 0.3s; }
+    .btn-ticket:hover { color:#7c0a02; }
+
+    /* 简介与开馆信息左右布局 */
+    .info-section#intro .info-container { flex-direction:row; align-items:flex-start; gap:40px; }
+    .info-section#intro .info-left { flex:0 0 60%; }
+    .info-section#intro .info-right { flex:0 0 40%; }
+
+    /* 珍品荟萃修复标题与展品距离 */
+    #exhibits .exhibits-grid { display:flex; flex-direction:column; width:100%; align-items:flex-start; gap:12px; }
+    .exhibit-item {
+      display:flex; gap:20px; background:#f8f5f0; border-radius:8px; padding:15px;
+      align-items:center; width:100%; box-sizing:border-box;
+    }
+    .exhibit-img { flex:0 0 200px; }
+    .exhibit-img img { width:100%; height:200px; border-radius:8px; object-fit:cover; }
+    .exhibit-text { flex:1; }
+    .exhibit-text h3 { font-size:20px; color:#7c0a02; margin-bottom:8px; }
+    .exhibit-text p { font-size:16px; line-height:1.6; margin:0; }
+
+    @media (max-width:900px){
+      .info-container { padding:20px; }
+      .exhibit-item { flex-direction:column; align-items:center; text-align:center; padding:10px; }
+      .exhibit-img { margin-bottom:5px; }
+      .info-section#intro .info-container { flex-direction:column; align-items:flex-start; }
+      .info-section#intro .info-left, .info-section#intro .info-right { flex:1 1 100%; }
+      .info-section#intro .visit-list li { align-items:center; }
+    }
+  </style>
+
+
+  <style>
+  .carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+  }
+  .carousel-track {
+    display: flex;
+    transition: transform 0.6s ease-in-out;
+    will-change: transform;
+  }
+  .carousel-item {
+    flex: 0 0 33.33%;
+    text-align: center;
+    opacity: 0.6;
+    transform: scale(0.9);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    box-sizing: border-box;
+  }
+  .carousel-item img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  .carousel-item .caption {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  .carousel-item.active {
+    opacity: 1;
+    transform: scale(1.05);
+    z-index: 5;
+  }
+  .carousel-item.active img {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  }
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(124,10,2,0.7);
+    color: #fff;
+    border: none;
+    font-size: 26px;
+    padding: 6px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    z-index: 10;
+  }
+  .carousel-btn.prev { left: 10px; }
+  .carousel-btn.next { right: 10px; }
+  .carousel-btn:hover { background: rgba(124,10,2,0.9); }
+  .carousel-thumbnails {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .carousel-thumbnails img {
+    width: 50px;
+    height: 36px;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0.6;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  .carousel-thumbnails img.active-thumb {
+    opacity: 1;
+    border-color: #7c0a02;
+  }
+  @media (max-width: 1024px) { .carousel-item { flex: 0 0 50%; } }
+  @media (max-width: 768px) { .carousel-item { flex: 0 0 100%; } }
+  </style>
+
+  <style>
+    @media (max-width:1400px){
+  .video-row { flex-direction:column; }
+  .video-row video { width:100%; height:auto; margin-bottom:10px; }
+  }
+  </style>
+
+  <style>
+  #visit-info .info-container {
+    max-width: 1480px;           /* 与其他板块一致的最大宽度 */
+    width: 100%;                   /* 容器宽度接近最大值，留出边距 */
+    margin: 0 auto;               /* 居中 */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 40px;;              /* 左右保留间距 */
+    box-sizing: border-box;       /* 包含 padding/边框在宽度内 */
+  }
+
+  #visit-info .photo-grid {
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;          /* 继承容器宽度 */
+  box-sizing: border-box;
+  }
+
+  #visit-info .photo-grid img {
+    width: 100%;
+    height: 200px;           /* 固定高度，统一大小 */
+    object-fit: cover;       /* 自动裁剪，填满格子 */
+    border-radius: 8px;
+  }
+
+  /* 响应式调整 */
+  @media (max-width:1200px){
+    #visit-info .photo-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width:900px){
+    #visit-info .photo-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width:600px){
+    #visit-info .photo-grid { grid-template-columns: 1fr; }
+  }
+  </style>
+
+
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="logo-title"><img src="img/logo.jpg" alt="蔡侯纸博物馆logo"></div>
+      <nav>
+        <ul>
+          <li><a href="#intro">馆史溯源</a></li>
+          <li><a href="#exhibits">珍品荟萃</a></li>
+          <li><a href="#craft">纸艺传承</a></li>
+          <li><a href="#media">墨香传韵</a></li>
+          <li><a href="#visit-info">观览时分</a></li>
+<!--          <li><a href="#about">关于我们</a></li>-->
+        </ul>
+      </nav>
+      <div class="rightbar"><div class="search-box"><input type="text" placeholder="搜索..."></div></div>
+    </div>
+  </header>
+
+  <!-- 轮播图 -->
+  <div class="slideshow-container">
+    <div class="slides fade"><img src="https://www.nwafu.edu.cn/images/2025-09/186beed00f56406189acb96ffb96b6a9.jpg" alt="展览图1"></div>
+    <div class="slides fade"><img src="https://www.nwafu.edu.cn/images/2025-09/f34fe858e91a4dc4adcd0e1af3c875ec.jpg" alt="展览图2"></div>
+    <div class="slides fade"><img src="img/1_1.jpg" alt="展览图3"></div>
+    <div class="slides fade"><img src="img/1_2.jpg" alt="展览图4"></div>
+    <div class="slides fade"><img src="img/1_3.jpg" alt="展览图5"></div>
+    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+  </div>
+  <div class="dot-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" onclick="currentSlide(5)"></span>
+  </div>
+
+  <!-- 简介与开馆信息 -->
+  <section class="info-section" id="intro">
+    <div class="info-container">
+      <div class="info-left">
+        <h2>起良蔡侯纸博物馆简介</h2>
+        <p>西安市起良蔡侯纸博物馆坐落于周至县九峰镇起良村，占地四千四百平方米，建筑规模一千九百余平方米。馆内布局分为三大区域：一为展陈馆，系统展示起良古法造纸的历史源流、工艺精髓、纸张应用与文化传承；二为古法造纸传习所，完整复原传承近两千年的蔡伦造纸技艺，生动演绎树皮化浆成纸的神奇历程；三为青少年优秀传统文化教育实践基地暨爱国主义教育基地，通过实物陈列、图文展示、影像记录等多元形式，让青少年与八方来客深切感受华夏造纸文明的博大精深，增强文化认同与民族自信，传递中华民族伟大复兴的坚定信念。</p>
+        <a href="#exhibits" class="btn-more">了解更多 &gt;</a>
+      </div>
+      <div class="info-right" id="visit">
+        <h2>参观信息</h2>
+        <ul class="visit-list">
+          <li><i>🕘</i><strong>开放时间：</strong> 全天开放 9:00 - 17:00 （16:30停止入馆）</li>
+          <li><i>📍</i><strong>地址：</strong> 陕西省西安市周至县九峰镇起良村</li>
+          <li><i>🛎️</i><strong>导览服务：</strong> 提供人工讲解和接送服务</li>
+          <li><i>🎨</i><strong>教育活动：</strong> 蔡侯纸、太阳花、土耳其水拓画、拓片等制作活动</li>
+          <li><i>📞</i><strong>联系方式：</strong> 电话：13379244269, 联系人：贺老师</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 其他板块保持原样 -->
+  <!-- 珍品荟萃 -->
+  <section class="info-section" id="exhibits">
+    <div class="info-container">
+      <div class="info-left">
+        <h2>珍品荟萃</h2>
+      </div>
+      <div class="exhibits-grid">
+        <div class="exhibit-item">
+          <div class="exhibit-img"><img src="img/caihoupaper.jpg" alt="珍品2"></div>
+          <div class="exhibit-text"><h3>蔡侯纸</h3><p>蔡侯纸（汉麻纸），源自中国古法手工造纸技艺，以楮树皮为主要原料，天然环保，纤维粗长，纸质坚韧<strong>可保存千年</strong>。色泽古雅、香味自然，纹理清晰，洇墨适中不印不发，纸尾带毛边，拉力强，伪造难度高。广泛适用于书法、绘画、装裱、包装、拓片、档案、信笺及收藏标本等领域，<strong>自古即为日常生活与艺术创作的必备之纸</strong>。品牌定位面向国内外文化发展与艺术创作，服务书画艺术家、设计师及大众生活，致力打造世界一流纸品品牌。作为中国最古老的古法造纸“活化石”，蔡侯纸承载文化传承与工艺精髓，彰显中华四大发明的历史价值与文化意义，<strong>助力民族复兴，圆中华纸梦</strong>。</p></div>
+        </div>
+        <div class="exhibit-item">
+          <div class="exhibit-img"><img src="img/pandapaper.jpg" alt="珍品1"></div>
+          <div class="exhibit-text"><h3>熊猫纸</h3><p>熊猫纸是西安市起良蔡侯纸博物馆<strong>首创的特色纸品</strong>，其理念为<strong>“国粹+国宝=国礼”</strong>。在蔡侯纸传统工艺基础上，熊猫纸沿用古汉麻纸制作流程，以大熊猫粪便为主料，辅以楮树皮和猕猴桃藤蔓浆，经过数十道工序精制而成。纸面略比楮皮纸粗糙，韧性适中，但散发淡淡竹香，兼具竹制纸与楮皮纸的优点。其纤维坚韧、筋道，书写不渗不散，浓淡有致，保存持久，<strong>适合书法、绘画及高端包装使用</strong>。熊猫纸已受到国内书画界、古籍修复专家及国际客户的广泛关注和高度认可，可作为国礼展示中国传统工艺与国宝文化魅力。</p></div>
+        </div>
+        <div class="exhibit-item">
+          <div class="exhibit-img"><img src="img/aichaopaper.jpg" alt="珍品3"></div>
+          <div class="exhibit-text"><h3>艾草纸</h3><p>艾草性味苦、辛、温，入脾、肝、肾，具有回阳、理气血、逐湿寒、止血安胎等功效，自古用于针灸与药草浴。《本草纲目》称“艾叶能灸百病”，《本草从新》记载其可通经活络、祛阴寒、消肿散结、回阳救逆。西安市起良蔡侯纸博物馆在传承古法造纸技艺基础上，<strong>创新研发艾草纸，以艾草为主要原料，将传统造纸术与中医养生理念融合而成</strong>。艾草纸不仅可用于书画创作，更具保健养生价值，<strong>是传统技艺与现代生活的完美结合</strong>。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section" id="craft">
+    <div class="info-container">
+      <div class="info-left">
+        <h2>纸艺传承</h2>
+        <div class="carousel">
+          <div class="carousel-track">
+            <!-- 15张图片 -->
+            <div class="carousel-item" data-index="0"><img src="img/1.jpg" alt="总览图"><p class="caption">总览图</p></div>
+            <div class="carousel-item" data-index="1"><img src="img/2.jpg" alt="织捞纸帘子"><p class="caption">织捞纸帘子</p></div>
+            <div class="carousel-item" data-index="2"><img src="img/3.jpg" alt="剥树皮"><p class="caption">剥树皮</p></div>
+            <div class="carousel-item" data-index="3"><img src="img/4.jpg" alt="泡树皮"><p class="caption">泡树皮</p></div>
+            <div class="carousel-item" data-index="4"><img src="img/5.jpg" alt="蒸树皮"><p class="caption">蒸树皮</p></div>
+            <div class="carousel-item" data-index="5"><img src="img/6.jpg" alt="踩树皮"><p class="caption">踩树皮</p></div>
+            <div class="carousel-item" data-index="6"><img src="img/7.jpg" alt="拣树皮"><p class="caption">拣树皮</p></div>
+            <div class="carousel-item" data-index="7"><img src="img/8.jpg" alt="踏碓"><p class="caption">踏碓</p></div>
+            <div class="carousel-item" data-index="8"><img src="img/9.jpg" alt="切幡"><p class="caption">切幡</p></div>
+            <div class="carousel-item" data-index="9"><img src="img/10.jpg" alt="洗浆"><p class="caption">洗浆</p></div>
+            <div class="carousel-item" data-index="10"><img src="img/11.jpg" alt="杖道子"><p class="caption">杖道子</p></div>
+            <div class="carousel-item" data-index="11"><img src="img/12.jpg" alt="抄纸"><p class="caption">抄纸</p></div>
+            <div class="carousel-item" data-index="12"><img src="img/13.jpg" alt="计数"><p class="caption">计数</p></div>
+            <div class="carousel-item" data-index="13"><img src="img/14.jpg" alt="晒纸"><p class="caption">晒纸</p></div>
+            <div class="carousel-item" data-index="14"><img src="img/15.jpg" alt="揭纸"><p class="caption">揭纸</p></div>
+          </div>
+
+          <!-- 左右按钮 -->
+          <button class="carousel-btn prev">&#10094;</button>
+          <button class="carousel-btn next">&#10095;</button>
+
+          <!-- 缩略图导航条 -->
+          <div class="carousel-thumbnails">
+            <img src="img/1.jpg" data-index="0" alt="总览图">
+            <img src="img/2.jpg" data-index="1" alt="织捞纸帘子">
+            <img src="img/3.jpg" data-index="2" alt="剥树皮">
+            <img src="img/4.jpg" data-index="3" alt="泡树皮">
+            <img src="img/5.jpg" data-index="4" alt="蒸树皮">
+            <img src="img/6.jpg" data-index="5" alt="踩树皮">
+            <img src="img/7.jpg" data-index="6" alt="拣树皮">
+            <img src="img/8.jpg" data-index="7" alt="踏碓">
+            <img src="img/9.jpg" data-index="8" alt="切幡">
+            <img src="img/10.jpg" data-index="9" alt="洗浆">
+            <img src="img/11.jpg" data-index="10" alt="杖道子">
+            <img src="img/12.jpg" data-index="11" alt="抄纸">
+            <img src="img/13.jpg" data-index="12" alt="计数">
+            <img src="img/14.jpg" data-index="13" alt="晒纸">
+            <img src="img/15.jpg" data-index="14" alt="揭纸">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 墨香传韵 -->
+  <section class="info-section" id="media">
+    <div class="info-container" style="flex-direction:column; gap:20px; max-width:1400px; margin:0 auto; padding:20 20px;">
+      <div class="info-left">
+        <h2>墨香传韵</h2>
+      </div>
+      <div class="video-row" style="display:flex; gap:20px; width:100%;">
+        <video controls style="flex:1 1 0; max-width:50%; height:400px; object-fit:cover; border-radius:8px;">
+          <source src="img/4_1.mp4" type="video/mp4">
+          您的浏览器不支持视频播放。
+        </video>
+        <video controls style="flex:1 1 0; max-width:50%; height:400px; object-fit:cover; border-radius:8px;">
+          <source src="img/4_2.mp4" type="video/mp4">
+          您的浏览器不支持视频播放。
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- 观览时分 -->
+  <section class="info-section" id="visit-info">
+    <div class="info-container">
+      <div class="info-left">
+        <h2>观览时分</h2>
+      </div>
+      <div class="photo-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; width:100%;">
+        <img src="img/5_1.jpg" alt="观览1">
+        <img src="img/5_2.jpg" alt="观览2">
+        <img src="img/5_3.jpg" alt="观览3">
+        <img src="img/5_4.jpg" alt="观览4">
+        <img src="img/5_5.png" alt="观览5">
+        <img src="img/5_6.jpg" alt="观览6">
+        <img src="img/5_7.jpg" alt="观览7">
+        <img src="img/5_8.jpg" alt="观览8">
+        <img src="img/5_9.jpg" alt="观览9">
+        <img src="img/5_10.jpg" alt="观览10">
+        <img src="img/5_11.jpg" alt="观览11">
+        <img src="img/5_13.jpg" alt="观览13">
+        <img src="img/5_14.jpg" alt="观览14">
+        <img src="img/5_15.jpg" alt="观览15">
+        <img src="img/5_16.jpg" alt="观览16">
+        <img src="img/5_20.jpg" alt="观览20">
+        <img src="img/5_17.jpg" alt="观览17">
+        <img src="img/5_18.jpg" alt="观览18">
+        <img src="img/5_19.jpg" alt="观览19">
+        <img src="img/5_21.jpg" alt="观览21">
+      </div>
+    </div>
+  </section>
+
+
+  <script>
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) { showSlides(slideIndex += n); }
+    function currentSlide(n) { showSlides(slideIndex = n); }
+
+    function showSlides(n) {
+      let slides = document.getElementsByClassName("slides");
+      let dots = document.getElementsByClassName("dot");
+      if(n > slides.length) { slideIndex = 1; }
+      if(n < 1) { slideIndex = slides.length; }
+      for(let i=0;i<slides.length;i++){ slides[i].style.display="none"; }
+      for(let i=0;i<dots.length;i++){ dots[i].className = dots[i].className.replace(" active",""); }
+      slides[slideIndex-1].style.display="block";
+      dots[slideIndex-1].className += " active";
+    }
+    setInterval(()=>{ plusSlides(1); }, 5000);
+  </script>
+
+
+ <script>
+  const track = document.querySelector('#craft .carousel-track');
+  const items = document.querySelectorAll('#craft .carousel-item');
+  const prevBtn = document.querySelector('#craft .prev');
+  const nextBtn = document.querySelector('#craft .next');
+  const carousel = document.querySelector('#craft .carousel');
+  const thumbnails = document.querySelectorAll('#craft .carousel-thumbnails img');
+
+  let currentIndex = 0;
+  let intervalId;
+
+  function updateCarousel() {
+    const itemWidth = items[0].getBoundingClientRect().width;
+    const offset = (track.clientWidth - itemWidth) / 2;
+    track.style.transform = `translateX(-${currentIndex * itemWidth - offset}px)`;
+
+    items.forEach((item, index) => {
+      item.classList.toggle('active', index === currentIndex);
+    });
+
+    thumbnails.forEach((thumb, index) => {
+      thumb.classList.toggle('active-thumb', index === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % items.length;
+    updateCarousel();
+  }
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    updateCarousel();
+  }
+
+  nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+  prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+
+  thumbnails.forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      currentIndex = parseInt(thumb.dataset.index);
+      updateCarousel();
+      resetInterval();
+    });
+  });
+
+  carousel.addEventListener('mouseenter', () => clearInterval(intervalId));
+  carousel.addEventListener('mouseleave', startInterval);
+
+  function startInterval() { intervalId = setInterval(nextSlide, 4000); }
+  function resetInterval() { clearInterval(intervalId); startInterval(); }
+
+  updateCarousel();
+  startInterval();
+  </script>
+
+  <script>
+    // 点击播放时自动暂停其他视频
+    const videos = document.querySelectorAll('#media video');
+    videos.forEach(video => {
+      video.addEventListener('play', () => {
+        videos.forEach(v => {
+          if(v !== video) v.pause();
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
