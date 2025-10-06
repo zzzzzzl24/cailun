@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>蔡侯纸博物馆</title>
+  <title>西安市起良蔡侯纸博物馆</title>
   <style>
     body {
       margin:0;
@@ -22,12 +22,9 @@
       max-width:1400px;
       margin:auto;
       padding:10px 20px;
+      flex-wrap:wrap;
     }
-    .logo-title {
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    .logo-title { display:flex; align-items:center; gap:12px; }
     .logo-title img { height:50px; }
     nav ul {
       list-style:none;
@@ -35,8 +32,9 @@
       padding:0;
       display:flex;
       gap:30px;
+      flex-wrap:wrap;
     }
-    nav ul li { min-width:100px; text-align:center; }
+    nav ul li { min-width:80px; text-align:center; }
     nav ul li a {
       color:#fff; text-decoration:none; font-size:16px; padding:8px;
       transition: all 0.3s;
@@ -64,12 +62,11 @@
     }
     .active, .dot:hover { background-color:#717171; }
 
-    /* 信息板块通用样式 */
+    /* 信息板块 */
     .info-section { display:flex; justify-content:center; padding:30px 10px; background:#f8f5f0; }
     .info-container {
       display:flex; flex-direction:column; max-width:1400px; width:95%; gap:20px;
       background:#fff; border-radius:12px; padding:30px 40px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      align-items:flex-start; justify-content:flex-start;
     }
     .info-left, .info-right { width:100%; }
     .info-left h2, .info-right h2 {
@@ -77,7 +74,7 @@
       margin:0; padding-left:12px; border-left:5px solid #c59d5f; margin-bottom:10px;
     }
     .info-left p { line-height:1.8; font-size:16px; }
-    .btn-more { display:inline-block; margin-top:15px; color:#c59d5f; text-decoration:none; font-weight:500; transition: all 0.3s; }
+    .btn-more { display:inline-block; margin-top:15px; color:#c59d5f; text-decoration:none; font-weight:500; }
     .btn-more:hover { text-decoration:underline; }
     .visit-list { list-style:none; padding:0; margin:0; }
     .visit-list li { display:flex; align-items:flex-start; margin-bottom:15px; font-size:16px; }
@@ -86,19 +83,18 @@
       background-color:#c59d5f; color:#fff; text-align:center; line-height:28px;
       border-radius:50%; margin-right:12px; font-weight:bold;
     }
-    .btn-ticket { display:inline-block; margin-left:10px; color:#c59d5f; text-decoration:underline; transition: all 0.3s; }
-    .btn-ticket:hover { color:#7c0a02; }
 
     /* 简介与开馆信息左右布局 */
-    .info-section#intro .info-container { flex-direction:row; align-items:flex-start; gap:40px; }
-    .info-section#intro .info-left { flex:0 0 60%; }
-    .info-section#intro .info-right { flex:0 0 40%; }
+    .info-section#intro .info-container { flex-direction:row; gap:40px; flex-wrap:wrap; }
+    .info-section#intro .info-left { flex:1 1 60%; }
+    .info-section#intro .info-right { flex:1 1 35%; }
 
-    /* 珍品荟萃修复标题与展品距离 */
-    #exhibits .exhibits-grid { display:flex; flex-direction:column; width:100%; align-items:flex-start; gap:12px; }
+    /* 珍品荟萃 */
+    #exhibits .exhibits-grid { display:flex; flex-direction:column; gap:12px; }
     .exhibit-item {
       display:flex; gap:20px; background:#f8f5f0; border-radius:8px; padding:15px;
       align-items:center; width:100%; box-sizing:border-box;
+      flex-wrap:wrap;
     }
     .exhibit-img { flex:0 0 200px; }
     .exhibit-img img { width:100%; height:200px; border-radius:8px; object-fit:cover; }
@@ -106,145 +102,64 @@
     .exhibit-text h3 { font-size:20px; color:#7c0a02; margin-bottom:8px; }
     .exhibit-text p { font-size:16px; line-height:1.6; margin:0; }
 
+    /* 纸艺传承轮播 */
+    .carousel { position: relative; overflow: hidden; width: 100%; margin: 20px auto; }
+    .carousel-track { display: flex; transition: transform 0.6s ease-in-out; }
+    .carousel-item {
+      flex: 0 0 33.33%; text-align: center; opacity: 0.6; transform: scale(0.9);
+      transition: transform 0.5s ease, opacity 0.5s ease; box-sizing: border-box;
+    }
+    .carousel-item img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; }
+    .carousel-item.active { opacity: 1; transform: scale(1.05); z-index: 5; }
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(124,10,2,0.7); color: #fff; border: none; font-size: 26px;
+      padding: 6px 16px; cursor: pointer; border-radius: 6px; z-index: 10;
+    }
+    .carousel-btn.prev { left: 10px; }
+    .carousel-btn.next { right: 10px; }
+    .carousel-thumbnails { display: flex; justify-content: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .carousel-thumbnails img {
+      width: 50px; height: 36px; object-fit: cover; cursor: pointer;
+      opacity: 0.6; border: 2px solid transparent; border-radius: 4px;
+    }
+    .carousel-thumbnails img.active-thumb { opacity: 1; border-color: #7c0a02; }
+
+    /* 墨香传韵视频 */
+    .video-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .video-row video {
+      width: 48%;   /* 保证两段视频并排 */
+      height: auto;
+      border-radius: 8px;
+    }
+
+    /* 观览时分 */
+    #visit-info .photo-grid {
+      display:grid; grid-template-columns: repeat(5, 1fr); gap: 20px;
+    }
+    #visit-info .photo-grid img {
+      width: 100%; height: 200px; object-fit: cover; border-radius: 8px;
+    }
+
+    /* 响应式断点 */
+    @media (max-width:1200px){
+      #visit-info .photo-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width:900px){
-      .info-container { padding:20px; }
-      .exhibit-item { flex-direction:column; align-items:center; text-align:center; padding:10px; }
-      .exhibit-img { margin-bottom:5px; }
-      .info-section#intro .info-container { flex-direction:column; align-items:flex-start; }
-      .info-section#intro .info-left, .info-section#intro .info-right { flex:1 1 100%; }
-      .info-section#intro .visit-list li { align-items:center; }
+      .info-section#intro .info-container { flex-direction:column; }
+      #visit-info .photo-grid { grid-template-columns: repeat(2, 1fr); }
+      .exhibit-item { flex-direction:column; text-align:center; }
+    }
+    @media (max-width:600px){
+      nav ul { flex-direction:column; gap:10px; }
+      #visit-info .photo-grid { grid-template-columns: 1fr; }
+      .carousel-item { flex: 0 0 100%; }
     }
   </style>
-
-
-  <style>
-  .carousel {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
-  }
-  .carousel-track {
-    display: flex;
-    transition: transform 0.6s ease-in-out;
-    will-change: transform;
-  }
-  .carousel-item {
-    flex: 0 0 33.33%;
-    text-align: center;
-    opacity: 0.6;
-    transform: scale(0.9);
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    box-sizing: border-box;
-  }
-  .carousel-item img {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 12px;
-  }
-  .carousel-item .caption {
-    margin-top: 5px;
-    font-size: 14px;
-    color: #555;
-  }
-  .carousel-item.active {
-    opacity: 1;
-    transform: scale(1.05);
-    z-index: 5;
-  }
-  .carousel-item.active img {
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-  }
-  .carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(124,10,2,0.7);
-    color: #fff;
-    border: none;
-    font-size: 26px;
-    padding: 6px 16px;
-    cursor: pointer;
-    border-radius: 6px;
-    z-index: 10;
-  }
-  .carousel-btn.prev { left: 10px; }
-  .carousel-btn.next { right: 10px; }
-  .carousel-btn:hover { background: rgba(124,10,2,0.9); }
-  .carousel-thumbnails {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  .carousel-thumbnails img {
-    width: 50px;
-    height: 36px;
-    object-fit: cover;
-    cursor: pointer;
-    opacity: 0.6;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    transition: all 0.3s;
-  }
-  .carousel-thumbnails img.active-thumb {
-    opacity: 1;
-    border-color: #7c0a02;
-  }
-  @media (max-width: 1024px) { .carousel-item { flex: 0 0 50%; } }
-  @media (max-width: 768px) { .carousel-item { flex: 0 0 100%; } }
-  </style>
-
-  <style>
-    @media (max-width:1400px){
-  .video-row { flex-direction:column; }
-  .video-row video { width:100%; height:auto; margin-bottom:10px; }
-  }
-  </style>
-
-  <style>
-  #visit-info .info-container {
-    max-width: 1480px;           /* 与其他板块一致的最大宽度 */
-    width: 100%;                   /* 容器宽度接近最大值，留出边距 */
-    margin: 0 auto;               /* 居中 */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 30px 40px;;              /* 左右保留间距 */
-    box-sizing: border-box;       /* 包含 padding/边框在宽度内 */
-  }
-
-  #visit-info .photo-grid {
-  display:grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  width: 100%;          /* 继承容器宽度 */
-  box-sizing: border-box;
-  }
-
-  #visit-info .photo-grid img {
-    width: 100%;
-    height: 200px;           /* 固定高度，统一大小 */
-    object-fit: cover;       /* 自动裁剪，填满格子 */
-    border-radius: 8px;
-  }
-
-  /* 响应式调整 */
-  @media (max-width:1200px){
-    #visit-info .photo-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-  @media (max-width:900px){
-    #visit-info .photo-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width:600px){
-    #visit-info .photo-grid { grid-template-columns: 1fr; }
-  }
-  </style>
-
-
 </head>
 <body>
   <header>
